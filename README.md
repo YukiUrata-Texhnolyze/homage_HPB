@@ -40,25 +40,69 @@
 - ユーザー・店舗管理
 - 売上・アクセス分析
 
-### 4. 技術選定
-- フロントエンド：Next.js（React）
-- バックエンド：Node.js + Express / Firebase
-- データベース：PostgreSQL / Firestore
-- 認証：Firebase Auth / Auth0
-- 決済：Stripe API
-- インフラ：Vercel / AWS / GCP
-- 開発支援：GitHub Copilot
+### 4. 技術選定（2025/11/10拡張）
 
-### 5. UI/UX設計
-- Figmaでプロトタイプ作成
-- モバイルファースト設計
-- 店舗・ユーザー両方の使いやすさを重視
+#### フロントエンド
+- Next.js（React）を採用。
+  - モダンなUI/UX設計、SSR/SSGによる高速表示に対応。
+  - VercelやAmplifyなどのクラウドデプロイも可。
 
-### 6. 開発フェーズ
-- GitHubでリポジトリ管理
-- Copilotを活用して機能ごとに開発
-- テスト：Jest / Playwright
-- CI/CD：GitHub Actions
+#### バックエンド
+- 現在：既存開発実績やチームスキルに応じてCakePHP（PHP系）＋AWS（Aurora）中心。
+  - AWS Aurora（MySQL互換/PostgreSQL互換）で高可用性・スケール重視。
+  - PHPエンジニア中心の運用体制でも安定。
+- 新規開発・大規模化方針
+  - 今後の拡張やNext.js連携API強化、リアルタイム性重視の場合 Node.js（Express/NestJS等）も評価・導入。
+  - Node.jsはマイクロサービス化・API構築・運用自動化に強い。
+  - AuroraはNode.js, PHP双方で利用可能。
+- 選択基準
+  - モダンAPI・システム連携/リアルタイム性や拡張性重視 ⇒ Node.js（Express/NestJS）
+  - レガシー資産活用/安定運用/エンジニア層重視 ⇒ CakePHP
+
+#### データベース
+- AWS Aurora（MySQL/PostgreSQL互換）を推奨
+  - マルチAZ構成、リードレプリカ対応、高可用性
+  - 今後の利用者増に容易に対応可能
+
+#### インフラ
+
+- AWSベース（EC2/ECS/Lambda/API Gateway/ALB等）
+- ファイル管理・配信は用途や費用、セキュリティ、規模に応じて以下2構成で検討：
+
+##### S3＋CloudFront（AWS中心構成）
+- 静的ファイル（画像・動画・各種アップロード）はS3で集中管理。
+- CloudFront（AWS CDN）経由でグローバル高速配信、セキュリティ・キャッシュにも優れる。
+- S3の廉価なストレージ料金＋CloudFront従量課金。
+- AWSサービスと連携が容易（Lambda, EC2等）、大規模システムにも最適。
+- WAFや監視はCloudFrontやAWSサービス側で強化可能。
+
+##### R2＋Cloudflare CDN（Cloudflare中心構成）
+- Cloudflare R2をS3互換ストレージとして利用、Cloudflare CDNと連携。
+- イングレス無料（データ転送コスト削減）、CloudflareのWAF・DDos対策・画像最適化等のセキュリティ・高速化機能が充実。
+- S3互換API対応なので既存S3向けアプリケーションは移行も容易。
+- AWS直接連携（Lambda等）がない場合やグローバル配信、徹底したコスト削減を重視する場合に最適。
+- Cloudflare PagesやWorkersなどサーバーレス構成との親和性も高い。
+
+##### 比較まとめ
+- AWS S3＋CloudFront：AWS内のインフラ・認証・監視・オートスケーリング等の運用にメリット大。既存サービスや運用がAWS中心の場合は特に有利。
+- Cloudflare R2＋Cloudflare CDN：グローバル配信、大規模静的ファイル配信・コスト削減・WAF/セキュリティ強化・CDN一元化を狙いたい場合に有力。AWSとのシームレスな連携は必要に応じて要検討。
+
+---
+
+- CI/CD：GitHub Actions→AWS CodeDeploy（運用自動化）
+- 監視：CloudWatch、Datadog
+- キャッシュ：Redis（ElasticCache）やCDN活用推奨
+- AutoScalingやロードバランサー運用（ALB）で100万ユーザー級にも対応可能な拡張性設計
+
+### 認証
+- AWS Cognito、Auth0、または各言語フレームワークでの独自認証
+
+### 決済
+- Stripe API（主流）やその他AWS連携API
+
+### 補足
+- 開発/運用メンバーの技術スタック・運用実績に応じて柔軟に変更・拡張
+- バックエンドは段階的にNode.js or PHPいずれも並行・移行可能
 
 ---
 
@@ -74,4 +118,4 @@
 ---
 
 ## 📁 ディレクトリ構成（予定）
-
+（必要に応じてDocs、AIコンテキスト、API、Components等を整理＆拡充)
